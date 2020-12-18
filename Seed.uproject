@@ -1,0 +1,19 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{74D5A290-4D5D-FF22-0C41-FC805A065A88}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "Seed",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "Protobuf",
+			"Enabled": true
+		}
+	]
+}
