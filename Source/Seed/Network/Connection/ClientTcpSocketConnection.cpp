@@ -3,6 +3,8 @@
 
 #include "Network/Connection/ClientTcpSocketConnection.h"
 
+#include "PbFiles/Test.pb.h"
+
 void AClientTcpSocketConnection::ConnectToGameServer() {
 	if (isConnected(connectionIdGameServer))
 	{
@@ -26,24 +28,18 @@ void AClientTcpSocketConnection::OnDisconnected(int32 ConId) {
 }
 
 void AClientTcpSocketConnection::OnMessageReceived(int32 ConId, TArray<uint8>& Message) {
-	UE_LOG(LogTemp, Log, TEXT("Log: Received message."));
-	// In this example, we always encode messages a certain way:
-	// The first 4 bytes contain the length of the rest of the message.
-	while (Message.Num() != 0) {
-		// read expected length
-		int32 msgLength = Message_ReadInt(Message);
-		if (msgLength == -1) // when we can't read 4 bytes, the method returns -1
-			return;
-		TArray<uint8> yourMessage;
-		// read the message itself
-		if (!Message_ReadBytes(msgLength, Message, yourMessage)) {
-			// If it couldn't read expected number of bytes, something went wrong.
-			// Print a UE_LOG here, while your project is in development.
-			continue;
-		}
-		// If the message was read, then treat "yourMessage" here!
-		// ...
-		// And then we go back to the "while", because we may have received multiple messages in a frame, 
-		// so they all have to be read.
+	UE_LOG(LogTemp, Log, TEXT("Log: Received message. "));
+	// read expected length
+	if(Message.Num() > 16)
+	{
+		int64 PreambleCode;
+		int32 Length;
+		int32 MsgID;
+		FMemory::Memcpy(&PreambleCode, Message.GetData(), 8);
+		FMemory::Memcpy(&Length, Message.GetData() + 8, 4);
+		FMemory::Memcpy(&MsgID, Message.GetData() + 12, 4);
+		SearchRequest Request;
+		Request.ParseFromArray(Message.GetData() + 16, Length);
+		UE_LOG(LogTemp, Log, TEXT("Log: Received message. %d"), MsgID);
 	}
 }
